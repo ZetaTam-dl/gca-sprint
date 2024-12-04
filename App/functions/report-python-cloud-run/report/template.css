@@ -1,0 +1,68 @@
+html,
+
+body {
+  font-family: Arial;
+  text-align: justify;
+  text-justify: auto;
+}
+
+h1 {
+  color: rgb(0, 179, 137);
+  font-size: 35px;
+}
+
+h2 {
+  color: rgb(0, 204, 150); 
+}
+
+div{
+  border-width: 0px;
+  border-style: solid;
+  border-color: gray;
+  break-inside: avoid;
+}
+
+p{
+  font-size: 12px;
+  margin-top: 0;
+  margin-bottom: 5px;
+}
+
+.logo{
+  position: absolute;
+  top: 10px;
+  left:500px;
+  width: 150px;
+  height: auto;
+}
+
+.image{
+  width: 100%;
+  height: auto;
+}
+
+.text-block{
+
+}
+
+.grid{
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+
+.fig-column{
+
+}
+
+
+.text-column{
+
+}
+
+.main-text{
+  height: 70%;
+}
+
+.catchy-text{
+  height: 30%;
+}

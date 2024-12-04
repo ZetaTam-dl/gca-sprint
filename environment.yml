@@ -1,0 +1,42 @@
+name: globalcoastalatlas
+channels:
+  - conda-forge
+  - nodefaults
+dependencies:
+  - python=3.10
+  - pygeos
+  - pyogrio
+  - xarray
+  - netcdf4
+  - numpy
+  - pandas
+  - matplotlib
+  - folium
+  - mapclassify
+  - pyarrow
+  - rasterio
+  - rioxarray
+  - jupyterlab
+  - bandit
+  - jupyterlab_code_formatter
+  - isort
+  - black
+  - zarr
+  - h5py
+  - nb_black
+  - fiona
+  - geojson
+  - gcsfs
+  - pystac
+  - jsonschema>=4.18
+  - pystac-client
+  - python-dotenv
+  - datacube
+  - google-cloud-storage
+  - statsmodels
+  - pytest
+  - pip:
+      - xstac
+      - mapbox
+      - mapboxcli # requires monkey patch for python 3.10
+      - git+https://github.com/openearth/coclicodata.git@main#egg=coclicodata
