@@ -41,22 +41,9 @@ p{
   height: auto;
 }
 
-.text-block{
-
-}
-
 .grid{
   display: grid;
   grid-template-columns: 1fr 1fr;
-}
-
-.fig-column{
-
-}
-
-
-.text-column{
-
 }
 
 .main-text{
@@ -65,4 +52,35 @@ p{
 
 .catchy-text{
   height: 30%;
+}
+
+.header-img{
+  position: running(header-img);
+}
+
+@page {
+  size: A4;
+
+  @bottom-right {
+    content: 'Page ' counter(page) ' of ' counter(pages);
+    font-size: 12px;
+  }
+  
+  @bottom-left {
+    content: " ";
+    background-image: url(./images/Deltares_pay-off_D-blauw_RGB.svg);
+    background-repeat: no-repeat;
+    width: 200px;
+    text-align: center;
+  }
+
+  @top-right {
+    content: " ";
+    background-image: url(./images/Deltares_logo_D-blauw_RGB.svg);
+    background-repeat: no-repeat;
+    height: 45px;
+    width: 100px;
+    text-align: center;
+  }
+
 }

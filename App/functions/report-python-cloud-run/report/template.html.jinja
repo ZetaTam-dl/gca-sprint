@@ -2,31 +2,30 @@
 {{ css }}
 </style>
 
-<div class="intro">
+<div>
     <h1>The State of the Coast Report</h1>
-    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce convallis magna et leo feugiat, id tristique nisi commodo. Suspendisse vestibulum ut neque vitae blandit. Phasellus pretium purus at enim mattis placerat. Proin vel purus lacus. Nam convallis in nunc a aliquet. Maecenas lacinia fermentum neque ut hendrerit. Aliquam vulputate ac purus vel hendrerit. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Curabitur eu faucibus lectus, id interdum urna. Proin tincidunt tempor ex, vel viverra magna commodo vel. In molestie justo non ligula auctor blandit. Quisque vel ante commodo, vulputate purus id, tempor velit. Maecenas et viverra.</p>
 </div>
 
 {% for dataset in data.datasets %}
 
-    <div class="text-block">
+    <div>
     <h2>{{ dataset.title }}</h2>
 
-        {% if dataset.dataset_id != ['sp_rcp45_p50', 'sp_rcp85_p50'] %}
+        {% if dataset.dataset_id != "future_shoreline_change" and dataset.dataset_id != "shoreline_change" and dataset.dataset_id != "sediment_class"%}
         <div class="grid">
-            <div class="text-column">
+            <div>
                 <div class="main-text">
                     <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce convallis magna et leo feugiat, id tristique nisi commodo. Suspendisse vestibulum ut neque vitae blandit. Phasellus pretium purus at enim mattis placerat. Proin vel purus lacus. Nam convallis in nunc a aliquet. Maecenas lacinia fermentum neque ut hendrerit. Aliquam vulputate ac purus vel hendrerit. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Curabitur eu faucibus lectus, id interdum urna. Proin tincidunt tempor ex, vel viverra magna commodo vel. In molestie justo non ligula auctor blandit. Quisque vel ante commodo, vulputate purus id, tempor velit. Maecenas et viverra.</p>
                 </div>
 
-                {% if dataset.dataset_id == "sediment_label" %}
+                {% if dataset.dataset_id == "sediment_class" %}
                 <div class="catchy-text">
                     <p style="font-size: 30px;"> <span style="color: rgb(255,216,20); font-size:40px;">XX%</span> of the coastline is made of <span style="color: rgb(255,216,20);font-size:40px;">Sand</span></p>
                 </div>
                 {% endif %}
             </div>
 
-            <div class="fig-column">
+            <div>
                 {% if dataset.image_svg %}
                 {{ dataset.image_svg }}
                 {% endif %}
@@ -38,19 +37,39 @@
         </div>
         {% endif %}
 
-        {% if dataset.dataset_id == ['sp_rcp45_p50', 'sp_rcp85_p50'] %}
-        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce convallis magna et leo feugiat, id tristique nisi commodo. Suspendisse vestibulum ut neque vitae blandit. Phasellus pretium purus at enim mattis placerat. Proin vel purus lacus. Nam convallis in nunc a aliquet. Maecenas lacinia fermentum neque ut hendrerit. Aliquam vulputate ac purus vel hendrerit. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Curabitur eu faucibus lectus, id interdum urna. Proin tincidunt tempor ex, vel viverra magna commodo vel. In molestie justo non ligula auctor blandit. Quisque vel ante commodo, vulputate purus id, tempor velit. Maecenas et viverra.</p>
+        {% if dataset.dataset_id == "future_shoreline_change" or dataset.dataset_id == "sediment_class"%}
+        <div>
+            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce convallis magna et leo feugiat, id tristique nisi commodo. Suspendisse vestibulum ut neque vitae blandit. Phasellus pretium purus at enim mattis placerat. Proin vel purus lacus. Nam convallis in nunc a aliquet. Maecenas lacinia fermentum neque ut hendrerit. Aliquam vulputate ac purus vel hendrerit. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Curabitur eu faucibus lectus, id interdum urna. Proin tincidunt tempor ex, vel viverra magna commodo vel. In molestie justo non ligula auctor blandit. Quisque vel ante commodo, vulputate purus id, tempor velit. Maecenas et viverra.</p>
+        </div>
 
-        {% if dataset.image_svg %}
-        {{ dataset.image_svg }}
-        {% endif %}
+        <div>
+            {% if dataset.image_svg %}
+                {{ dataset.image_svg }}
+            {% endif %}
 
-        {% if dataset.image_base64 %}
-        <img class="image" src="data:image/png;base64,{{ dataset.image_base64 }}" />
-        {% endif %}
-
+            {% if dataset.image_base64 %}
+                <img class="image" src="data:image/png;base64,{{ dataset.image_base64 }}" />
+            {% endif %}
         </div>
         {% endif %}
+
+        {% if dataset.dataset_id == "shoreline_change" %}
+        <div>
+            <p>{{ dataset.text }}</p>
+        </div>
+        
+        <div>
+            {% if dataset.image_svg %}
+                {{ dataset.image_svg }}
+            {% endif %}
+
+            {% if dataset.image_base64 %}
+                <img class="image" src="data:image/png;base64,{{ dataset.image_base64 }}" />
+            {% endif %}
+        </div>
+        {% endif %}
+
+
 
     </div>
     
@@ -59,3 +78,4 @@
 {% if not data.datasets %}
     <p>Unfortunately there was no data available in the region you selected.</p>
 {% endif %}
+
