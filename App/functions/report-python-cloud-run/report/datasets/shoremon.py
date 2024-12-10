@@ -22,7 +22,8 @@ def get_sedclass_content(xarr: xr.Dataset) -> DatasetContent:
     """Get content for the dataset"""
     dataset_id = "sediment_class"
     title = "Beach Sediment Classification"
-    text = "Here we generate some content based on the the dataset" ##TODO: to be filled in by LLM
+    text = "Here we generate some content based on the the dataset"
+    #text = describe_data(xarr, dataset_id)
 
     image_base64 = create_sedclass_plot(xarr)
     return DatasetContent(
@@ -37,8 +38,8 @@ def get_shoremon_content(xarr: xr.Dataset) -> DatasetContent:
     """Get content for the dataset"""
     dataset_id = "shoreline_change"
     title = "The Shoreline Monitor"
-    text = describe_data(xarr, dataset_id)
-    #text = "Here we generate some content based on the the dataset" #
+    #text = describe_data(xarr, dataset_id)
+    text = "Here we generate some content based on the the dataset"
 
     image_base64 = create_shoremon_plot(xarr)
     return DatasetContent(
@@ -148,7 +149,7 @@ def create_shoremon_plot(xarr):
     data = np.histogram(xarr['changerate'].values, bins=bins)[0]
     
     # Plot data
-    fig, axs = plt.subplots(1, 3, figsize=(15, 5), width_ratios=[1, 0.8, 1])
+    fig, axs = plt.subplots(1, 3, figsize=(15, 5), width_ratios=[1.2, 0.8, 0.3])
     base = world.boundary.plot(
         ax=axs[0], edgecolor="grey", facecolor="grey", alpha=0.1, zorder=0
     )
@@ -161,6 +162,7 @@ def create_shoremon_plot(xarr):
                 add_colorbar=True, cbar_kwargs={'label': 'Erosion/Accretion [m/yr]'})
     axs[0].set_xlim(xlim)
     axs[0].set_ylim(ylim)
+    axs[0].set_aspect(1/np.cos(np.mean(ylim)*np.pi/180))
 
     # Add a pie chart showing the distribution of the classes
     axs[1].pie(data, labels=labels, colors=colors, autopct='%1.0f%%', startangle=90, counterclock=False)

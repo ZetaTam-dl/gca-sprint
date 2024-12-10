@@ -99,11 +99,10 @@ def generate_report_content(polygon: Polygon) -> ReportContent:
     ### getting gca datasets ###
     gca_client = STACClientGCA.open(STAC_ROOT_DEFAULT)
     zarr_datasets: list[ZarrDataset] = gca_client.get_all_zarr_uris()
-
-    gca_collection_dict = {'world_pop':0, 'world_gdp':1, ##comment: not the ideal way but enought for now##
-                            'sed_class':2, 'shore_mon':3, 'shore_mon_hr':4, 
-                            'shore_mon_drivers':5, 'shore_mon_fut':6,
-                            'esl_gwl':7, 'sub_threat':8 }
+    
+    ##comment: not the ideal way to re-arrange dataset but enought for now##
+    gca_collection_dict = {'sed_class':0, 'world_pop':1, 'world_gdp':2, 'shore_mon':3, 'shore_mon_hr': 4,
+                           'shore_mon_drivers':5, 'sub_threat':6, 'esl_gwl':7, 'shore_mon_fut':8}
         
     existing_collection = [zarr_datasets[ind].dataset_id for ind in range(len(zarr_datasets))]
     existing_num = [gca_collection_dict[name] for name in existing_collection]

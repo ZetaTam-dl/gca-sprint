@@ -9,10 +9,18 @@ body {
 h1 {
   color: rgb(0, 179, 137);
   font-size: 35px;
+  padding-left: 14mm;
 }
 
 h2 {
   color: rgb(0, 204, 150); 
+  margin-top: 0;
+}
+
+h3 {
+  font-style: bold;
+  font-size: 26px;
+  margin-top: 0;
 }
 
 div{
@@ -20,7 +28,10 @@ div{
   border-style: solid;
   border-color: gray;
   break-inside: avoid;
+  margin-top: 0;
+  margin-bottom: 0;
 }
+
 
 p{
   font-size: 12px;
@@ -28,22 +39,26 @@ p{
   margin-bottom: 5px;
 }
 
-.logo{
-  position: absolute;
-  top: 10px;
-  left:500px;
-  width: 150px;
-  height: auto;
-}
 
 .image{
   width: 100%;
   height: auto;
 }
 
-.grid{
+.section-grid{
+  background-color: None;
+  padding-left: 14mm;
+  padding-right: 14mm;
+  padding-top: 25px;
+}
+
+.left-right-grid{
   display: grid;
   grid-template-columns: 1fr 1fr;
+}
+
+.top-bottom-grid{
+
 }
 
 .main-text{
@@ -54,16 +69,15 @@ p{
   height: 30%;
 }
 
-.header-img{
-  position: running(header-img);
-}
-
 @page {
   size: A4;
+  margin-left: 0;
+  margin-right: 0;
 
   @bottom-right {
     content: 'Page ' counter(page) ' of ' counter(pages);
     font-size: 12px;
+    margin-right: 14mm;
   }
   
   @bottom-left {
@@ -72,6 +86,7 @@ p{
     background-repeat: no-repeat;
     width: 200px;
     text-align: center;
+    margin-left: 14mm;
   }
 
   @top-right {
@@ -81,6 +96,7 @@ p{
     height: 45px;
     width: 100px;
     text-align: center;
+    margin-right: 14mm;
   }
 
 }

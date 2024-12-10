@@ -8,21 +8,29 @@
 
 {% for dataset in data.datasets %}
 
-    <div>
+    {% if dataset.dataset_id == "overview" or dataset.dataset_id == "shoreline_change" or dataset.dataset_id == "land_sub" %}
+        <div class="section-grid">
+    {% else %}
+        <div class="section-grid" style="background-color: rgba(8,12,218,0.05);">
+    {% endif %}
+
+
+    {% if dataset.dataset_id == "sediment_class" %}
+        <h3>The <span style="color: rgb(8,12,218)">Present</span> Day</h3>
+    {% elif dataset.dataset_id == "shoreline_change" %}
+        <h3>The <span style="color: rgb(8,12,218)">Historical</span> Trend</h3>
+    {% elif dataset.dataset_id == "esl" %}
+        <h3>The <span style="color: rgb(8,12,218)">Future</span> Drivers</h3>
+    {% endif %}
+
     <h2>{{ dataset.title }}</h2>
 
         {% if dataset.dataset_id != "future_shoreline_change" and dataset.dataset_id != "shoreline_change" and dataset.dataset_id != "sediment_class"%}
-        <div class="grid">
+        <div class="left-right-grid">
             <div>
                 <div class="main-text">
-                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce convallis magna et leo feugiat, id tristique nisi commodo. Suspendisse vestibulum ut neque vitae blandit. Phasellus pretium purus at enim mattis placerat. Proin vel purus lacus. Nam convallis in nunc a aliquet. Maecenas lacinia fermentum neque ut hendrerit. Aliquam vulputate ac purus vel hendrerit. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Curabitur eu faucibus lectus, id interdum urna. Proin tincidunt tempor ex, vel viverra magna commodo vel. In molestie justo non ligula auctor blandit. Quisque vel ante commodo, vulputate purus id, tempor velit. Maecenas et viverra.</p>
+                    <p>{{ dataset.text }}</p>
                 </div>
-
-                {% if dataset.dataset_id == "sediment_class" %}
-                <div class="catchy-text">
-                    <p style="font-size: 30px;"> <span style="color: rgb(255,216,20); font-size:40px;">XX%</span> of the coastline is made of <span style="color: rgb(255,216,20);font-size:40px;">Sand</span></p>
-                </div>
-                {% endif %}
             </div>
 
             <div>
@@ -37,40 +45,23 @@
         </div>
         {% endif %}
 
-        {% if dataset.dataset_id == "future_shoreline_change" or dataset.dataset_id == "sediment_class"%}
-        <div>
-            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce convallis magna et leo feugiat, id tristique nisi commodo. Suspendisse vestibulum ut neque vitae blandit. Phasellus pretium purus at enim mattis placerat. Proin vel purus lacus. Nam convallis in nunc a aliquet. Maecenas lacinia fermentum neque ut hendrerit. Aliquam vulputate ac purus vel hendrerit. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Curabitur eu faucibus lectus, id interdum urna. Proin tincidunt tempor ex, vel viverra magna commodo vel. In molestie justo non ligula auctor blandit. Quisque vel ante commodo, vulputate purus id, tempor velit. Maecenas et viverra.</p>
-        </div>
+        {% if dataset.dataset_id == "future_shoreline_change" or dataset.dataset_id == "shoreline_change" or dataset.dataset_id == "sediment_class"%}
+        <div class="top-bottom-grid">
+            <div>
+                <p>{{ dataset.text }}</p>
+            </div>
 
-        <div>
-            {% if dataset.image_svg %}
-                {{ dataset.image_svg }}
-            {% endif %}
+            <div>
+                {% if dataset.image_svg %}
+                    {{ dataset.image_svg }}
+                {% endif %}
 
-            {% if dataset.image_base64 %}
-                <img class="image" src="data:image/png;base64,{{ dataset.image_base64 }}" />
-            {% endif %}
-        </div>
-        {% endif %}
-
-        {% if dataset.dataset_id == "shoreline_change" %}
-        <div>
-            <p>{{ dataset.text }}</p>
-        </div>
-        
-        <div>
-            {% if dataset.image_svg %}
-                {{ dataset.image_svg }}
-            {% endif %}
-
-            {% if dataset.image_base64 %}
-                <img class="image" src="data:image/png;base64,{{ dataset.image_base64 }}" />
-            {% endif %}
+                {% if dataset.image_base64 %}
+                    <img class="image" src="data:image/png;base64,{{ dataset.image_base64 }}" />
+                {% endif %}
+            </div>
         </div>
         {% endif %}
-
-
-
     </div>
     
 {% endfor %}

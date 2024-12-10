@@ -12,6 +12,7 @@ import numpy as np
 
 from .utils import plot_to_base64
 from .datasetcontent import DatasetContent
+from utils.gentext import describe_data
 
 world = gpd.read_file(
         Path(__file__).parent.parent.parent / "data" / "world_administrative.zip"
@@ -21,7 +22,8 @@ def get_world_pop_content(xarr: xr.Dataset) -> DatasetContent:
     """Get content for the dataset"""
     dataset_id = "world_pop"
     title = "The Population"
-    text = "Here we generate some content based on the dataset" ##TODO
+    text = "Here we generate some content based on the dataset"
+    #text = describe_data(xarr, dataset_id)
 
     image_base64 = create_world_pop_plot(xarr)
     return DatasetContent(
@@ -40,7 +42,7 @@ def create_world_pop_plot(xarr):
 
     p = rpc.scatter(xarr, ax=ax, data_type='data',
                     x='lon', y='lat', 
-                    hue='pop_tot', 
+                    s=xarr['pop_tot'].values/100, hue='pop_tot',
                     edgecolor='none', cmap='RdYlGn', 
                     add_colorbar=True, cbar_kwargs={'label': 'Total Population'}
                     )
