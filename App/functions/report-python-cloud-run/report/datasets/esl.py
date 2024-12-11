@@ -86,35 +86,6 @@ def create_esl_plot(xarr):
             hue='esl',
             cmap='RdYlGn_r',
             add_colorbar=True, cbar_kwargs={'label':'ESL [m]'})
-
-    # im1 = ax.scatter(
-    #     xarr.lon.values,
-    #     xarr.lat.values,
-    #     10 * xarr.sel(ensemble=5).esl.values,
-    #     xarr.sel(ensemble=5).esl.values,
-    #     cmap=cmap,
-    #     norm=norm,
-    #     zorder=1,
-    # )
-    # # plt.set_clim(0,5)
-    # im2 = ax.scatter(
-    #     xarr.lon.values,
-    #     xarr.lat.values + 0.1,
-    #     10 * xarr.sel(ensemble=50).esl.values,
-    #     xarr.sel(ensemble=50).esl.values,
-    #     cmap=cmap,
-    #     norm=norm,
-    #     zorder=1,
-    # )
-    # im3 = ax.scatter(
-    #     xarr.lon.values,
-    #     xarr.lat.values + 0.2,
-    #     10 * xarr.sel(ensemble=95).esl.values,
-    #     xarr.sel(ensemble=95).esl.values,
-    #     cmap=cmap,
-    #     norm=norm,
-    #     zorder=1,
-    # )
     
     ax.set_title("%s-year extreme sea level for %s global warming level" % (rp, GWLs))
 
@@ -127,20 +98,6 @@ def create_esl_plot(xarr):
     ax.set_aspect(1/np.cos(np.mean(ylim)*np.pi/180))
     ax.grid(False)
 
-    # fig.colorbar(im1, ax=ax)
-    # im1.set_clim(0, 7)
-
-    # cax = fig.add_axes(
-    #     [
-    #         ax.get_position().x1 + 0.01,
-    #         ax.get_position().y0,
-    #         0.02,
-    #         ax.get_position().height,
-    #     ]
-    # )  # to give colorbar own axes
-    # plt.colorbar(im1, cax=cax)  # Similar to fig.colorbar(im, cax = cax)
-    # cax.set_title("ESL in meters")
-    # #
     fig.tight_layout()
     
     return plot_to_base64(fig)

@@ -23,7 +23,7 @@ def get_sedclass_content(xarr: xr.Dataset) -> DatasetContent:
     dataset_id = "sediment_class"
     title = "Beach Sediment Classification"
     text = "Here we generate some content based on the the dataset"
-    #text = describe_data(xarr, dataset_id)
+    text = describe_data(xarr, dataset_id)
 
     image_base64 = create_sedclass_plot(xarr)
     return DatasetContent(
@@ -38,8 +38,8 @@ def get_shoremon_content(xarr: xr.Dataset) -> DatasetContent:
     """Get content for the dataset"""
     dataset_id = "shoreline_change"
     title = "The Shoreline Monitor"
-    #text = describe_data(xarr, dataset_id)
     text = "Here we generate some content based on the the dataset"
+    text = describe_data(xarr, dataset_id)
 
     image_base64 = create_shoremon_plot(xarr)
     return DatasetContent(

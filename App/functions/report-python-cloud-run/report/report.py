@@ -12,6 +12,7 @@ from utils.zarr_slicing import ZarrSlicer
 from datasets.datasetcontent import DatasetContent
 from datasets.base_dataset import get_dataset_content
 from datasets.overview import get_overview
+from datasets.slr import get_slr_content
 
 POLYGON_DEFAULT = """{"coordinates":[[[2.3915028831735015,51.7360381463356],[5.071438932343227,50.89406012060684],[6.955992986278972,51.49577449585874],[7.316959036046541,53.18700330195111],[6.636226617140238,53.961350092621075],[3.8631377106468676,54.14643052276938],[2.1218958391276317,53.490771261555096],[2.3915028831735015,51.7360381463356]]],"type":"Polygon"}"""
 STAC_ROOT_DEFAULT = "https://raw.githubusercontent.com/openearth/global-coastal-atlas/subsidence_etienne/STAC/data/current/catalog.json"
@@ -99,15 +100,6 @@ def generate_report_content(polygon: Polygon) -> ReportContent:
     ### getting gca datasets ###
     gca_client = STACClientGCA.open(STAC_ROOT_DEFAULT)
     zarr_datasets: list[ZarrDataset] = gca_client.get_all_zarr_uris()
-    
-    ##comment: not the ideal way to re-arrange dataset but enought for now##
-    gca_collection_dict = {'sed_class':0, 'world_pop':1, 'world_gdp':2, 'shore_mon':3, 'shore_mon_hr': 4,
-                           'shore_mon_drivers':5, 'sub_threat':6, 'esl_gwl':7, 'shore_mon_fut':8}
-        
-    existing_collection = [zarr_datasets[ind].dataset_id for ind in range(len(zarr_datasets))]
-    existing_num = [gca_collection_dict[name] for name in existing_collection]
-    
-    zarr_datasets = [zarr_datasets[existing_num.index(i)] for i in range(len(gca_collection_dict))]
 
     for zarr_dataset in zarr_datasets:
         xarr = ZarrSlicer._get_dataset_from_zarr_url(zarr_dataset.zarr_uri)
@@ -118,18 +110,29 @@ def generate_report_content(polygon: Polygon) -> ReportContent:
             if dataset_content:
                 dataset_contents.append(dataset_content)
 
+    ### getting SLR ###
+    dataset_content = get_slr_content(polygon)
+    dataset_contents.append(dataset_content)
+
     ### getting DTM ### ##TODO
-    # gca_client = STACClientGCA.open(STAC_COCLICO)
-    # zarr_datasets: list[ZarrDataset] = gca_client.get_all_zarr_uris() ##TODO: doesn't work on CoCliCo
 
 
 
-    # dataset_contents.append(dataset_content)
-
-    ### generate overview ###
+    ### generating overview ###
     dataset_content = get_overview(polygon)
-    final_dataset_contents.append(dataset_content)
-    final_dataset_contents.extend(dataset_contents)
+    dataset_contents.append(dataset_content)
+
+    ### re-arranging datasets ###
+    collection_dict = ['overview', 'dtm', 'sediment_class', 'world_pop', 'flooding', 'shoreline_change',
+                        'land_sub', 'slr', 'esl', 'future_shoreline_change']
+        
+    existing_collection = [dataset_contents[ind].dataset_id for ind in range(len(dataset_contents))]
+
+    for item in collection_dict:
+        if item in existing_collection:
+            final_dataset_contents.append(dataset_contents[existing_collection.index(item)])
+        else:
+            None
 
     return ReportContent(datasets=final_dataset_contents)
 

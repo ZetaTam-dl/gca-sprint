@@ -23,7 +23,7 @@ def get_world_pop_content(xarr: xr.Dataset) -> DatasetContent:
     dataset_id = "world_pop"
     title = "The Population"
     text = "Here we generate some content based on the dataset"
-    #text = describe_data(xarr, dataset_id)
+    text = describe_data(xarr, dataset_id)
 
     image_base64 = create_world_pop_plot(xarr)
     return DatasetContent(
@@ -44,7 +44,7 @@ def create_world_pop_plot(xarr):
                     x='lon', y='lat', 
                     s=xarr['pop_tot'].values/100, hue='pop_tot',
                     edgecolor='none', cmap='RdYlGn', 
-                    add_colorbar=True, cbar_kwargs={'label': 'Total Population'}
+                    add_colorbar=True, cbar_kwargs={'label': 'Population'}
                     )
 
     lonmin = min(xarr.lon.values)

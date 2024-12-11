@@ -39,17 +39,16 @@ def create_sub_treat_plot(xarr: xr.Dataset):
         ax=ax, edgecolor="grey", facecolor="grey", alpha=0.1, zorder=0
     )
 
-    p = rpc.scatter(xarr, ax=ax,
+    p = rpc.scatter(xarr, ax=ax, data_type='data',
                     x='lon', y='lat', 
                     hue='epsi', 
                     edgecolor='none', cmap='RdYlGn', 
-                    add_colorbar=False
+                    add_colorbar=True, cbar_kwargs={'label': 'Land Subsidence Index'}
                     )
 
     from mpl_toolkits.axes_grid1 import make_axes_locatable
     divider = make_axes_locatable(ax)
     cax = divider.append_axes("right", size=0.25, pad=0.10)
-    plt.colorbar(p, cax=cax, label='Shoreline Change Rate [m/yr]')
 
     lonmin = min(xarr.lon.values)
     lonmax = max(xarr.lon.values)
