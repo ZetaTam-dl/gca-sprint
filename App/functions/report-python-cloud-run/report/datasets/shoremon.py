@@ -1,33 +1,18 @@
 # Packages for loading data
 import geopandas as gpd
-import pystac_client
 import matplotlib.pyplot as plt
-from shapely.geometry import Polygon
 import xarray as xr
-
-# Packages for interactive plotting
-import holoviews as hv
-import geoviews as gv
-import hvplot.xarray
-import hvplot.pandas
-
 # Packages for plotting
 from resilientplotterclass import rpc
 from pathlib import Path
 import matplotlib
-
 matplotlib.use("Agg")
-from matplotlib import colors
-from matplotlib import pyplot as plt
-
 plt.rcParams["svg.fonttype"] = "none"
 import numpy as np
-import xarray as xr
-
-import geopandas as gpd  # type: ignore
 
 from .utils import plot_to_base64
 from .datasetcontent import DatasetContent
+from utils.gentext import describe_data
 
 world = gpd.read_file(
         Path(__file__).parent.parent.parent / "data" / "world_administrative.zip"
@@ -35,9 +20,10 @@ world = gpd.read_file(
 
 def get_sedclass_content(xarr: xr.Dataset) -> DatasetContent:
     """Get content for the dataset"""
-    dataset_id = "sediment_label"
+    dataset_id = "sediment_class"
     title = "Beach Sediment Classification"
-    text = "Here we generate some content based on the the dataset" ##TODO: to be filled in by LLM
+    text = "Here we generate some content based on the the dataset"
+    #text = describe_data(xarr, dataset_id)
 
     image_base64 = create_sedclass_plot(xarr)
     return DatasetContent(
@@ -50,9 +36,10 @@ def get_sedclass_content(xarr: xr.Dataset) -> DatasetContent:
 
 def get_shoremon_content(xarr: xr.Dataset) -> DatasetContent:
     """Get content for the dataset"""
-    dataset_id = "changerate"
+    dataset_id = "shoreline_change"
     title = "The Shoreline Monitor"
-    text = "Here we generate some content based on the the dataset" ##TODO: to be filled in by LLM
+    #text = describe_data(xarr, dataset_id)
+    text = "Here we generate some content based on the the dataset"
 
     image_base64 = create_shoremon_plot(xarr)
     return DatasetContent(
@@ -65,7 +52,7 @@ def get_shoremon_content(xarr: xr.Dataset) -> DatasetContent:
 
 def get_shoremon_fut_content(xarr: xr.Dataset) -> DatasetContent:
     """Get content for the dataset"""
-    dataset_id = ["sp_rcp45_p50", "sp_rcp85_p50"]
+    dataset_id = "future_shoreline_change"
     title = "The Shoreline Monitor - Future Projection"
     text = "Here we generate some content based on the the dataset" ##TODO: to be filled in by LLM
 
@@ -103,7 +90,7 @@ def create_sedclass_plot(xarr):
         portion.append(port)
 
     # Plot the data
-    fig, ax = plt.subplots(2, 1, figsize=(5, 10), height_ratios=[1,1])
+    fig, ax = plt.subplots(1, 2, figsize=(10, 5), width_ratios=[1,1])
     
     base = world.boundary.plot(
         ax=ax[0], edgecolor="grey", facecolor="grey", alpha=0.1, zorder=0
@@ -133,8 +120,6 @@ def create_sedclass_plot(xarr):
     ylim = [latmin - 0.1, latmax + 0.1]
 
     ax[0].set(
-        xlabel="lon",
-        ylabel="lat",
         xlim=xlim,
         ylim=ylim,
     )
@@ -142,29 +127,12 @@ def create_sedclass_plot(xarr):
     ax[0].set_aspect(1/np.cos(np.mean(ylim)*np.pi/180))
     ax[0].grid(False)
 
-
+    fig.tight_layout()
+    
     return plot_to_base64(fig)
 
 
 def create_shoremon_plot(xarr):
-    fig, ax = plt.subplots(1, 1, figsize=(10, 10))
-
-    base = world.boundary.plot(
-        ax=ax, edgecolor="grey", facecolor="grey", alpha=0.1, zorder=0
-    )
-
-    p = rpc.scatter(xarr, ax=ax, 
-                    x='lon', y='lat', 
-                    hue='changerate', 
-                    vmin=-5, vmax=5, 
-                    edgecolor='none', cmap='RdYlGn', 
-                    add_colorbar=False
-                    )
-
-    from mpl_toolkits.axes_grid1 import make_axes_locatable
-    divider = make_axes_locatable(ax)
-    cax = divider.append_axes("right", size=0.25, pad=0.10)
-    plt.colorbar(p, cax=cax, label='Shoreline Change Rate [m/yr]')
 
     lonmin = min(xarr.lon.values)
     lonmax = max(xarr.lon.values)
@@ -174,16 +142,41 @@ def create_shoremon_plot(xarr):
     xlim = [lonmin - 0.1, lonmax + 0.1]
     ylim = [latmin - 0.1, latmax + 0.1]
 
-    ax.set(
-        xlabel="lon",
-        ylabel="lat",
-        xlim=xlim,
-        ylim=ylim,
-    )
-
-    ax.set_aspect(1/np.cos(np.mean(ylim)*np.pi/180))
-    ax.grid(False)
+    # Get pie chart data
+    labels = ['Extreme\nerosion', 'Severe\nerosion', 'Intense\nerosion', 'Erosion', 'Stable', 'Accretion', 'Intense\naccretion', 'Severe\naccretion', 'Extreme\naccretion']
+    colors = [matplotlib.cm.RdYlGn(i) for i in np.linspace(0.05, 0.95, len(labels))]
+    bins = [-np.inf, -5, -3, -1, -0.5, 0.5 , 1, 3, 5, np.inf]
+    data = np.histogram(xarr['changerate'].values, bins=bins)[0]
     
+    # Plot data
+    fig, axs = plt.subplots(1, 3, figsize=(15, 5), width_ratios=[1.2, 0.8, 0.3])
+    base = world.boundary.plot(
+        ax=axs[0], edgecolor="grey", facecolor="grey", alpha=0.1, zorder=0
+    )
+    rpc.scatter(xarr, data_type='data', 
+                ax=axs[0], 
+                x='lon', y='lat', 
+                hue='changerate', 
+                vmin=-5, vmax=5, 
+                cmap='RdYlGn', 
+                add_colorbar=True, cbar_kwargs={'label': 'Erosion/Accretion [m/yr]'})
+    axs[0].set_xlim(xlim)
+    axs[0].set_ylim(ylim)
+    axs[0].set_aspect(1/np.cos(np.mean(ylim)*np.pi/180))
+
+    # Add a pie chart showing the distribution of the classes
+    axs[1].pie(data, labels=labels, colors=colors, autopct='%1.0f%%', startangle=90, counterclock=False)
+    axs[1].axis('equal')
+    
+    # Add legend
+    labels2 = ['Extreme erosion (<-5 m/yr)', 'Severe erosion (-5 to -3 m/yr)', 'Intense erosion (-3 to -1 m/yr)', 'Erosion (-1 to -0.5 m/yr)', 'Stable (-0.5 to 0.5 m/yr)',
+              'Accretion (0.5 to 1 m/yr)', 'Intense accretion (1 to 3 m/yr)', 'Severe accretion (3 to 5 m/yr)', 'Extreme accretion (>5 m/yr)']
+    colors2 = [matplotlib.cm.RdYlGn(i) for i in np.linspace(0.05, 0.95, len(labels2))]
+    axs[2].legend(handles=[matplotlib.patches.Patch(color=colors2[i], label=labels2[i]) for i in range(len(labels2))], loc='center left', frameon=False)
+    axs[2].axis('off')
+
+    fig.tight_layout()
+
     return plot_to_base64(fig)
 
 
@@ -210,17 +203,12 @@ def create_shoremon_fut_plot(xarr):
                 )
             
             p = rpc.scatter(diff / (yearlist[yr + 1] - yearlist[yr]), 
-                            ax=ax[yr, jj], 
+                            ax=ax[yr, jj], data_type='data',
                             x='lon', y='lat', 
                             vmin=-5, vmax=5, 
                             hue=scenario, 
                             edgecolor='none', cmap='RdYlGn', 
-                            add_colorbar=False)
-
-            from mpl_toolkits.axes_grid1 import make_axes_locatable
-            divider = make_axes_locatable(ax[yr, jj])
-            cax = divider.append_axes("right", size=0.25, pad=0.10)
-            plt.colorbar(p, cax=cax, label='Average Shoreline Change Rate [m/yr]')
+                            add_colorbar=True, cbar_kwargs={'label': 'Average Shoreline Change Rate [m/yr]'})
 
             lonmin = min(xarr.lon.values)
             lonmax = max(xarr.lon.values)
@@ -231,8 +219,6 @@ def create_shoremon_fut_plot(xarr):
             ylim = [latmin - 0.1, latmax + 0.1]
 
             ax[yr, jj].set(
-                xlabel="lon",
-                ylabel="lat",
                 xlim=xlim,
                 ylim=ylim,
             )
@@ -240,5 +226,7 @@ def create_shoremon_fut_plot(xarr):
             ax[yr, jj].set_aspect(1/np.cos(np.mean(ylim)*np.pi/180))
             ax[yr, jj].grid(False)
             ax[yr, jj].set_title('50%ile Future Prediction between Year {}'.format(yearlist[yr+1]) + ' and Year {}'.format(yearlist[yr]) + '\n' + '- Scenario {}'.format(scenarioname))
+
+    fig.tight_layout()
 
     return plot_to_base64(fig)
