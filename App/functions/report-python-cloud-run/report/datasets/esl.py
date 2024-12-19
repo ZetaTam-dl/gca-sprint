@@ -20,13 +20,50 @@ world = gpd.read_file(
     Path(__file__).parent.parent.parent / "data" / "world_administrative.zip"
 )
 
-def get_esl_content(xarr: xr.Dataset) -> DatasetContent:
+def get_esl_content(xarr: xr.Dataset) -> list[DatasetContent]:
+    dataset_contents_list = []
+    dataset_contents_list.append(get_esl26_content(xarr))
+    dataset_contents_list.append(get_esl45_content(xarr))
+    dataset_contents_list.append(get_esl85_content(xarr))
+
+    return dataset_contents_list
+
+
+def get_esl26_content(xarr: xr.Dataset) -> DatasetContent:
     """Get content for ESL dataset"""
-    dataset_id = "esl"
+    dataset_id = "esl_RCP26"
     title = "Extreme Sea Level"
     text = "Here we generate some content based on the ESL dataset"
 
-    image_base64 = create_esl_plot(xarr)
+    image_base64 = create_esl_plot(xarr, 'RCP26')
+    return DatasetContent(
+        dataset_id=dataset_id,
+        title=title,
+        text=text,
+        image_base64=image_base64,
+    )
+
+def get_esl45_content(xarr: xr.Dataset) -> DatasetContent:
+    """Get content for ESL dataset"""
+    dataset_id = "esl_RCP45"
+    title = "Extreme Sea Level"
+    text = "Here we generate some content based on the ESL dataset"
+
+    image_base64 = create_esl_plot(xarr, 'RCP45')
+    return DatasetContent(
+        dataset_id=dataset_id,
+        title=title,
+        text=text,
+        image_base64=image_base64,
+    )
+
+def get_esl85_content(xarr: xr.Dataset) -> DatasetContent:
+    """Get content for ESL dataset"""
+    dataset_id = "esl_RCP85"
+    title = "Extreme Sea Level"
+    text = "Here we generate some content based on the ESL dataset"
+
+    image_base64 = create_esl_plot(xarr, 'RCP85')
     return DatasetContent(
         dataset_id=dataset_id,
         title=title,
@@ -35,16 +72,22 @@ def get_esl_content(xarr: xr.Dataset) -> DatasetContent:
     )
 
 
-def create_esl_plot(xarr):
-    GWL = 0  # look at ds.gwl.values for options
-    GWLs = "present-day"
+def create_esl_plot(xarr, scenario):
+    match scenario:
+        case 'RCP26':
+            GWL = 1.5
+            GWLs = "1.5 ℃"
+        case 'RCP45':
+            GWL = 3
+            GWLs = "3 ℃"
+        case 'RCP85':
+            GWL = 5
+            GWLs = "5 ℃"
+
     # ens = 50 # look at ds.ensemble.values for options
     rp = 50.0  # look at ds.rp.values for options
 
     xarr = xarr.sel(gwl=GWL, rp=rp)  # filter the other params
-
-    # cmap = matplotlib.cm.RdYlGn_r
-    # norm = colors.BoundaryNorm(np.arange(0, 7.5, 0.5), cmap.N)
 
     lonmin = min(xarr.lon.values)
     lonmax = max(xarr.lon.values)

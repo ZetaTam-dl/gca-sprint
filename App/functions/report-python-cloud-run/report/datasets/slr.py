@@ -17,14 +17,16 @@ from .utils import plot_to_base64
 from .datasetcontent import DatasetContent
 from utils.gentext import describe_data
 
+
 def get_slr_content(polygon: Polygon) -> DatasetContent:
+    slps = get_slps_data(polygon)
     """Get content for the dataset"""
     dataset_id = "slr"
     title = "Sea Level Rise Projection"
     text = "Here we generate some content based on the dataset"
-    #text = describe_data(xarr, dataset_id)
+    text = describe_data(slps, dataset_id)
 
-    image_base64 = create_slr_plot(polygon)
+    image_base64 = create_slr_plot(slps)
     return DatasetContent(
         dataset_id=dataset_id,
         title=title,
@@ -32,7 +34,73 @@ def get_slr_content(polygon: Polygon) -> DatasetContent:
         image_base64=image_base64,
     )
 
-def create_slr_plot(polygon):
+# def get_slr_content(polygon: Polygon) -> list[DatasetContent]:
+#     dataset_contents_list = []
+#     dataset_contents_list.append(get_slr26_content(polygon))
+#     dataset_contents_list.append(get_slr45_content(polygon))
+#     dataset_contents_list.append(get_slr85_content(polygon))
+
+#     return dataset_contents_list
+
+# def get_slr26_content(polygon: Polygon) -> DatasetContent:
+#     slps = get_slps_data(polygon, 'RCP26')
+#     """Get content for the dataset"""
+#     dataset_id = "slr_RCP26"
+#     title = "Sea Level Rise Projection"
+#     text = "Here we generate some content based on the dataset"
+#     text = describe_data(slps, dataset_id)
+
+#     image_base64 = create_slr_plot(slps, 'RCP26')
+#     return DatasetContent(
+#         dataset_id=dataset_id,
+#         title=title,
+#         text=text,
+#         image_base64=image_base64,
+#     )
+
+# def get_slr45_content(polygon: Polygon) -> DatasetContent:
+#     slps = get_slps_data(polygon, 'RCP45')
+#     """Get content for the dataset"""
+#     dataset_id = "slr_RCP45"
+#     title = "Sea Level Rise Projection"
+#     text = "Here we generate some content based on the dataset"
+#     text = describe_data(slps, dataset_id)
+
+#     image_base64 = create_slr_plot(slps, 'RCP45')
+#     return DatasetContent(
+#         dataset_id=dataset_id,
+#         title=title,
+#         text=text,
+#         image_base64=image_base64,
+#     )
+
+# def get_slr85_content(polygon: Polygon) -> DatasetContent:
+#     slps = get_slps_data(polygon, 'RCP85')
+#     """Get content for the dataset"""
+#     dataset_id = "slr_RCP85"
+#     title = "Sea Level Rise Projection"
+#     text = "Here we generate some content based on the dataset"
+#     text = describe_data(slps, dataset_id)
+
+#     image_base64 = create_slr_plot(slps, 'RCP85')
+#     return DatasetContent(
+#         dataset_id=dataset_id,
+#         title=title,
+#         text=text,
+#         image_base64=image_base64,
+#     )
+
+
+def get_slps_data(polygon: Polygon) -> dict:
+    
+    # match scenario:
+    #     case 'RCP26':
+    #         ssps = ['ssp126']
+    #     case 'RCP45':
+    #         ssps = ['ssp245']
+    #     case 'RCP85':
+    #         ssps = ['ssp585']
+
     # Set stac URL
     STAC_url = "https://raw.githubusercontent.com/openearth/coclicodata/main/current/catalog.json"
 
@@ -42,15 +110,9 @@ def create_slr_plot(polygon):
     # Get the AR6 collection
     collection = catalog.get_child("slp")
 
-    # Get all items to iterate over
-    items = collection.get_all_items()
-
-
-    ssps = ["high_end", "ssp126", "ssp245", "ssp585"]
-    msls = ["msl_h"]
+    ssps = ['high_end', 'ssp126','ssp245','ssp585']
+    msls = ["msl_m"]
     years = ["2031","2041","2051", "2061", "2071", "2081", "2091", "2101","2111","2121","2131","2141","2151"]
-
-    filtered_items = []
 
     slps = []
 
@@ -99,9 +161,51 @@ def create_slr_plot(polygon):
                     'value': value
                 })
 
+    return slps
+
+
+# def create_slr_plot(slps: dict, scenario: str):
+
+#     match scenario:
+#         case 'RCP26':
+#             ssp = ['ssp126']
+#             color = 'g'
+#         case 'RCP45':
+#             ssp = ['ssp245']
+#             color = 'b'
+#         case 'RCP85':
+#             ssp = ['ssp585']
+#             color = 'r'
+
+#     fig, ax = plt.subplots(1,1, figsize=(5,5))
+
+#     # Filter the data for the current ssp
+#     ssp_values_m = [slp['value'] for slp in slps if (slp['msl'] == 'msl_m')]
+#     ssp_values_l = [slp['value'] for slp in slps if (slp['msl'] == 'msl_l')]
+#     ssp_values_h = [slp['value'] for slp in slps if (slp['msl'] == 'msl_h')]
+#     ssp_years = ["2031","2041","2051", "2061", "2071", "2081", "2091", "2101","2111","2121","2131","2141","2151"]
+
+#     # Line plot
+#     ax.plot(ssp_years, ssp_values_m, label=ssp, marker='o', color=color)
+#     ax.plot(ssp_years, ssp_values_l, label=ssp, color=color, alpha=0)
+#     ax.plot(ssp_years, ssp_values_h, label=ssp, color=color, alpha=0)
+
+#     ax.fill_between(ssp_years, ssp_values_l, ssp_values_h, color=color, alpha=0.2)
+
+#     ax.set_xlabel("Year")
+#     ax.set_ylabel("Sea Level Rise [mm]")
+#     ax.set_xticks(ssp_years, ssp_years, rotation=45)
+#     ax.legend(['Medium Confidence', '_', '_', 'Low to High Confidence Range'])
+
+#     return plot_to_base64(fig)
+
+
+def create_slr_plot(slps: dict):
+
     fig, ax = plt.subplots(1,1, figsize=(5,5))
 
-    # Now, directly use the results to plot
+    ssps = ["high_end", "ssp126", "ssp245", "ssp585"]
+
     for ssp in ssps:
         # Filter the data for the current ssp
         ssp_values = [slp['value'] for slp in slps if slp['ssp'] == ssp]
@@ -113,7 +217,6 @@ def create_slr_plot(polygon):
     ax.set_xlabel("Year")
     ax.set_ylabel("Sea Level Rise [mm]")
     ax.set_xticks(ssp_years, ssp_years, rotation=45)
-    ax.set_title("Timeline for Different SSPs")
     ax.legend()
 
     return plot_to_base64(fig)
